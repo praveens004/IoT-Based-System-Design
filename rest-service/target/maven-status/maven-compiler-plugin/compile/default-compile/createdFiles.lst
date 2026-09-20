@@ -1,0 +1,5 @@
+com\example\rest\RestSensorServer$SensorHandler.class
+com\example\rest\SensorData.class
+com\example\rest\RestSensorServer.class
+com\example\rest\Esp32RestSimulator.class
+com\example\rest\DatabaseHelper.class

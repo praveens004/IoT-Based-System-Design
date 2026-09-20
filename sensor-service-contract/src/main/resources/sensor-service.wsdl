@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:tns="http://example.com/sensor"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             name="SensorService"
+             targetNamespace="http://example.com/sensor">
+
+    <types>
+        <xsd:schema targetNamespace="http://example.com/sensor"
+                    elementFormDefault="qualified">
+
+            <xsd:complexType name="SensorData">
+                <xsd:sequence>
+                    <xsd:element name="deviceId" type="xsd:string"/>
+                    <xsd:element name="humidity" type="xsd:double"/>
+                    <xsd:element name="pressure" type="xsd:double"/>
+                    <xsd:element name="moisture" type="xsd:double"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:element name="sendSensorData">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="data" type="tns:SensorData"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="sendSensorDataResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="result" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getSensorData">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="deviceId" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getSensorDataResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="data" type="tns:SensorData" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+        </xsd:schema>
+    </types>
+
+    <message name="sendSensorDataRequest">
+        <part name="parameters" element="tns:sendSensorData"/>
+    </message>
+    <message name="sendSensorDataResponse">
+        <part name="parameters" element="tns:sendSensorDataResponse"/>
+    </message>
+
+    <message name="getSensorDataRequest">
+        <part name="parameters" element="tns:getSensorData"/>
+    </message>
+    <message name="getSensorDataResponse">
+        <part name="parameters" element="tns:getSensorDataResponse"/>
+    </message>
+
+    <portType name="SensorServicePortType">
+        <operation name="sendSensorData">
+            <input message="tns:sendSensorDataRequest"/>
+            <output message="tns:sendSensorDataResponse"/>
+        </operation>
+        <operation name="getSensorData">
+            <input message="tns:getSensorDataRequest"/>
+            <output message="tns:getSensorDataResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="SensorServiceSoapBinding" type="tns:SensorServicePortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="sendSensorData">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="getSensorData">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <service name="SensorService">
+        <port name="SensorServicePort" binding="tns:SensorServiceSoapBinding">
+            <soap:address location="http://localhost:8080/sensor"/>
+        </port>
+    </service>
+
+</definitions>

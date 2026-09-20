@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>From Sensors to Services | IoT Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <span class="dot"></span>
+        From Sensors to Services
+      </div>
+      <p class="subtitle">End-to-End Intelligent IoT Solution · SOA Demo</p>
+    </header>
+
+    <!-- Live request path -->
+    <section class="architecture">
+      <div class="arch-head">
+        <h2>Live request path</h2>
+        <div class="arch-tools">
+          <label class="toggle"><input type="checkbox" id="animToggle" checked /> Animate the path</label>
+          <span class="pill" id="svcPill">checking service…</span>
+        </div>
+      </div>
+
+      <div class="path">
+        <!-- row 1: write path -->
+        <div class="node sensor" id="nodeEsp">
+          <b>ESP32 Device</b>
+          <small>Consumer · writes readings</small>
+        </div>
+        <div class="link" id="linkW1"><span class="lbl">POST JSON</span><span class="line">→</span></div>
+
+        <div class="node service" id="nodeSvc">
+          <b>Sensor Service</b>
+          <small>Provider · contract-first<br />SOAP + REST front doors</small>
+        </div>
+
+        <div class="link" id="linkW2"><span class="lbl">SQL INSERT</span><span class="line">→</span></div>
+        <div class="node db" id="nodeDb">
+          <b>H2 Database</b>
+          <small>table sensor_data<br />only the service can see it</small>
+        </div>
+
+        <!-- row 2: read path -->
+        <div class="node user" id="nodeUser">
+          <b>User / App</b>
+          <small>Consumer · reads readings</small>
+        </div>
+        <div class="link" id="linkR1"><span class="lbl">GET ⇄ JSON</span><span class="line">⇄</span></div>
+        <div class="link" id="linkR2"><span class="lbl">SQL SELECT</span><span class="line">⇄</span></div>
+      </div>
+
+      <p class="caption" id="caption">Send a reading as the ESP32, then fetch it as the user. Watch each hop.</p>
+    </section>
+
+    <div class="main-grid">
+
+      <!-- Left: ESP32 side (writes) -->
+      <section class="card">
+        <div class="card-header">
+          <h2><span class="who sensor">ESP32</span> Sensor side</h2>
+        </div>
+        <p class="card-desc">The device sends readings to the service. It never touches the database.</p>
+
+        <form id="sensorForm">
+          <div class="form-group">
+            <label for="deviceId">Device ID</label>
+            <input type="text" id="deviceId" value="ESP32-01" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="humidity">Humidity (%)</label>
+              <input type="number" id="humidity" value="65.4" step="0.1" required />
+            </div>
+            <div class="form-group">
+              <label for="pressure">Pressure (hPa)</label>
+              <input type="number" id="pressure" value="1012.8" step="0.1" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="moisture">Soil Moisture (%)</label>
+            <input type="number" id="moisture" value="42.1" step="0.1" required />
+          </div>
+
+          <button type="submit" class="btn primary" id="sendBtn">
+            Send Sensor Data
+          </button>
+        </form>
+
+        <label class="toggle block"><input type="checkbox" id="streamToggle" /> Auto-stream a new reading every 3 s (like a real device)</label>
+
+        <div id="sendStatus" class="status"></div>
+      </section>
+
+      <!-- Right: User side (reads) -->
+      <section class="card">
+        <div class="card-header">
+          <h2><span class="who user">User</span> Consumer side</h2>
+        </div>
+        <p class="card-desc">Every fetch goes to the service, and the service reads it from the database.</p>
+
+        <div class="fetch-bar">
+          <input type="text" id="queryDevice" placeholder="Device ID (empty = all devices)" aria-label="Device ID to fetch" />
+          <button class="btn secondary" id="refreshBtn">Fetch from service</button>
+        </div>
+        <label class="toggle block"><input type="checkbox" id="pollToggle" /> Auto-fetch every 3 s</label>
+
+        <div class="table-wrapper">
+          <table id="readingsTable">
+            <thead>
+              <tr>
+                <th>Recorded</th>
+                <th>Device</th>
+                <th>Humidity</th>
+                <th>Pressure</th>
+                <th>Moisture</th>
+                <th title="Which front door of the service delivered the reading">Via</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr>
+                <td colspan="6" class="empty">Nothing fetched yet. Click “Fetch from service”.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="fetch-meta" id="fetchMeta"></p>
+      </section>
+    </div>
+
+    <!-- Service call log -->
+    <section class="card">
+      <div class="card-header">
+        <h2>Service call log</h2>
+        <button class="btn secondary" id="clearLogBtn">Clear</button>
+      </div>
+      <p class="card-desc">Every call this page makes to the service, with the real request and response. Click a row to expand it.</p>
+      <div class="log" id="callLog">
+        <p class="empty">No calls yet.</p>
+      </div>
+    </section>
+
+    <!-- SOA roles -->
+    <section class="card explanation">
+      <h2>How this demo maps to SOA</h2>
+      <div class="roles">
+        <div class="role">
+          <span class="tag consumer">Service consumers</span>
+          <p>The ESP32 (writes) and the user app (reads). Both know only the service's interface, never the table.</p>
+        </div>
+        <div class="role">
+          <span class="tag contract">Service contract</span>
+          <p>REST: <code>POST/GET /api/sensors</code>. SOAP: the WSDL, which the client stubs are generated from.
+            <a href="http://127.0.0.1:8080/sensor?wsdl" target="_blank" rel="noopener">Open WSDL</a></p>
+        </div>
+        <div class="role">
+          <span class="tag provider">Service provider</span>
+          <p>One sensor service with two front doors (SOAP and REST). It owns the business rules and the data access.</p>
+        </div>
+        <div class="role">
+          <span class="tag data">Data store</span>
+          <p>H2 database, shared by both front doors. Changing the schema never touches a device or the user app.
+            <a href="http://localhost:8083" target="_blank" rel="noopener">Open H2 console</a></p>
+        </div>
+      </div>
+      <p class="tip"><strong>Try this:</strong> run the Java ESP32 simulator that uses the SOAP stub
+        (<code>mvn exec:java</code> in <code>sensor-client</code>), then click “Fetch from service”.
+        Those rows appear tagged <span class="via soap">SOAP</span> next to the ones this page sent as
+        <span class="via rest">REST</span>: two front doors, one service, one database.</p>
+    </section>
+
+    <footer>
+      <p>SOA & Web Services Demo</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

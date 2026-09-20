@@ -1,0 +1,10 @@
+com\example\client\generated\GetSensorDataResponse.class
+com\example\client\generated\SendSensorDataResponse.class
+com\example\client\generated\package-info.class
+com\example\client\generated\GetSensorData.class
+com\example\client\generated\ObjectFactory.class
+com\example\client\generated\SendSensorData.class
+com\example\client\generated\SensorServicePortType.class
+com\example\client\generated\SensorData.class
+com\example\client\Esp32Simulator.class
+com\example\client\generated\SensorService.class

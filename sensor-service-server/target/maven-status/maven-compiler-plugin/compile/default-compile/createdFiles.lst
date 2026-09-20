@@ -1,0 +1,5 @@
+com\example\sensor\SensorData.class
+com\example\sensor\SensorServiceImpl.class
+com\example\sensor\DatabaseHelper.class
+com\example\sensor\package-info.class
+com\example\sensor\SensorServicePublisher.class
