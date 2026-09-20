@@ -1,6 +1,6 @@
 # From Sensors to Services
 
-This project shows how a Service-Oriented Architecture (SOA) works using a small IoT example. A sensor device (an ESP32, simulated here in Java) measures humidity, air pressure and soil moisture and sends the readings to a service. The service stores them in a database, and other programs, such as a web dashboard, read them back through the same service. Nobody talks to the database directly except the service itself.
+This project shows how a Service-Oriented Architecture (SOA) works. A sensor device (an ESP32, simulated here in Java) measures humidity, air pressure and soil moisture and sends the readings to a service. The service stores them in a database, and other programs, such as a web dashboard, read them back through the same service. Nobody talks to the database directly except the service itself.
 
 The same service is available in two ways. One is a SOAP web service, where the client is generated from a WSDL contract. The other is a REST service, where clients simply send JSON over HTTP. Both write to the same database, so you can compare the two styles side by side.
 
